@@ -52,11 +52,11 @@ const LiveTrackMap = (props) => {
         })
         .then((response) => response.json())
         .then((json) => {
-            console.log("Received Branch Data:", json)
+            //console.log("Received Branch Data:", json)
             setStores(json);
         })
         .catch(err => {
-            console.log(err)
+            //console.log(err)
         });
         
         setTimeout(()=>{ socketInit(props.branchId) }, 5000)
@@ -66,7 +66,7 @@ const LiveTrackMap = (props) => {
 
     socketInit = (branchId) => {
         if (!socketState) {
-          console.log('socket initiliazed...');
+          //console.log('socket initiliazed...');
           
           let socket_c = new WebSocket('wss://live-dominos.iugo.tech/ws?branchID=' + branchId);
           socket_c.onopen = socketOpen;
@@ -92,7 +92,7 @@ const LiveTrackMap = (props) => {
     };
     
     socketError = d => {
-        console.log('Socket ERROR', d);
+        //console.log('Socket ERROR', d);
         setSocketState(false);
 
     };
@@ -119,7 +119,7 @@ const LiveTrackMap = (props) => {
 
         let parsedData = JSON.parse(message.data);
 
-        console.log(" Message Received", parsedData);
+        //console.log(" Message Received", parsedData);
 
         let data =[];
 
