@@ -41,7 +41,7 @@ const LiveTrackMap = (props) => {
     let cameraRef = useRef(undefined);
 
     useEffect(() => {
-        console.log("Component did mount!");
+        //console.log("Component did mount!");
 
         fetch(APP_API_URL + '/ms/zoneByExtId/' + props.branchId, {
             method: 'GET',
@@ -285,7 +285,6 @@ const LiveTrackMap = (props) => {
             >
                 <MapboxGL.Camera
                     ref={useCallback((c) => {
-                        console.log("Setting Camera Ref!");
                         cameraRef.current = c;                        
                     })}
                     zoomLevel={16}
