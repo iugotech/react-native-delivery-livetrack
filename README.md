@@ -3,7 +3,7 @@
 ## Getting started
 
 
-`$ npm install @react-native-mapbox-gl/maps --save`
+`$ npm install @react-native-mapbox-gl/maps --save`  
 `$ npm install "iugotech/react-native-delivery-livetrack#master" --save`
 
 ### Mostly automatic installation
