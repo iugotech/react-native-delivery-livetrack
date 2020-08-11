@@ -28,41 +28,54 @@ const mapStyles = {
     },
 };
 
+function usePrevious(value) {
+    const ref = useRef();
+    useEffect(() => {
+      ref.current = value;
+    });
+    return ref.current;
+  }
+
 const LiveTrackMap = (props) => {
 
     const [ socket, setSocket ] = useState({});
     const [ socketState, setSocketState ] = useState(false);
     const [ stores, setStores] = useState([]);
     const [ drivers, setDrivers ] = useState([]);
+
     const [ center, setCenter] = useState(ITU_OFFICE_COORDINATE)
     const [ curCenter, setCurCenter] = useState([0, 0])
 
     let clockCallSocket = {};
     let cameraRef = useRef(undefined);
 
-    useEffect(() => {
-        //console.log("Component did mount!");
+    const {branchId, driverId} = props
+    const prevData = usePrevious({branchId, driverId});
 
-        fetch(APP_API_URL + '/ms/zoneByExtId/' + props.branchId, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Api-Key': APP_API_KEY_DOMINOS,
-            }
-        })
-        .then((response) => response.json())
-        .then((json) => {
-            //console.log("Received Branch Data:", json)
-            setStores(json);
-        })
-        .catch(err => {
-            //console.log(err)
-        });
-        
-        setTimeout(()=>{ socketInit(props.branchId) }, 5000)
+    useEffect(() => {        
+
+        if (props.branchId){
+            fetch(APP_API_URL + '/ms/zoneByExtId/' + props.branchId, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Api-Key': APP_API_KEY_DOMINOS,
+                }
+            })
+            .then((response) => response.json())
+            .then((json) => {
+                //console.log("Received Branch Data:", json)
+                setStores(json);
+            })
+            .catch(err => {
+                //console.log(err)
+            });
+            
+            setTimeout(()=>{ socketInit(props.branchId) }, 5000)
+        }
         
 
-    }, []);
+    },[branchId, driverId]);
 
     socketInit = (branchId) => {
         if (!socketState) {
@@ -168,8 +181,7 @@ const LiveTrackMap = (props) => {
         if (featureCollection.features.length === 1){
             //console.log("Center", center)
             //console.log("Current Center", curCenter)
-            if (center !== curCenter){
-
+            if (center !== curCenter || (curCenter && (featureCollection.features[0].geometry.coordinates[0] !== curCenter[0] || featureCollection.features[0].geometry.coordinates[1] !== curCenter[1]))){
                 if(cameraRef){
                     cameraRef.current.moveTo(featureCollection.features[0].geometry.coordinates)
                     setCenter(featureCollection.features[0].geometry.coordinates);
@@ -337,7 +349,7 @@ const isHotTrackingLive = (trackerCode) => {
         })
         .then((response) => response.json())
         .then((json) => {
-            // console.log("Received Data:", json)
+            // console.log("Received Data:", json)    
             let res = json.success;
 
             resolve(res)
@@ -350,8 +362,39 @@ const isHotTrackingLive = (trackerCode) => {
     
 }
 
+const retrieveHotTrackingInfo = (trackerCode) => {
+
+    return new Promise((resolve, reject) => {
+        fetch(DOMINOS_INTEGRATION_API_URL + '/ms/hotTrackingInfo?trackerCode=' + trackerCode, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Api-Key': APP_API_KEY_DOMINOSINTEGRATION,
+            }
+        })
+        .then((response) => response.json())
+        .then((json) => {
+            // console.log("Received Data:", json)    
+            let res = json.success;
+
+            if (res){
+                resolve(res.data)
+            } else {
+                reject("Info not available")
+            }
+
+        })
+        .catch(err => {
+            // console.log(err)
+            reject(err)
+        });
+    })    
+
+}
+
 export {
     DeliveryLivetrack,
     LiveTrackMap,
-    isHotTrackingLive
+    isHotTrackingLive,
+    retrieveHotTrackingInfo
 }
