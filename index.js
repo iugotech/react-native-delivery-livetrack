@@ -338,7 +338,9 @@ const isHotTrackingLive = (trackerCode) => {
         .then((response) => response.json())
         .then((json) => {
             console.log("Received Data:", json)
-            resolve(json)
+            let res = json.success;
+
+            resolve(res)
         })
         .catch(err => {
             console.log(err)
