@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useContext, useRef, useCallback} from 'react';
 import { View, NativeModules, Dimensions } from 'react-native';
 import MapboxGL from "@react-native-mapbox-gl/maps";
-import {APP_API_URL, APP_API_KEY_DOMINOS} from "./config"
+import {APP_API_URL, APP_API_KEY_DOMINOS, DOMINOS_INTEGRATION_API_URL, APP_API_KEY_DOMINOSINTEGRATION} from "./config"
 import dominosBranch from "./assets/images/dominos-marker-2.png";
 import dominosDriver from "./assets/images/driver-icon.png";
 
@@ -332,7 +332,7 @@ const isHotTrackingLive = (trackerCode) => {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Api-Key': APP_API_KEY_DOMINOS,
+                'Api-Key': APP_API_KEY_DOMINOSINTEGRATION,
             }
         })
         .then((response) => response.json())
