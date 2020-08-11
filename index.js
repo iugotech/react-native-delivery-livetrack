@@ -336,11 +336,11 @@ const isHotTrackingLive = (trackerCode) => {
             }
         })
         .then((json) => {
-            //console.log("Received Branch Data:", json)
+            console.log("Received Data:", json)
             resolve(json)
         })
         .catch(err => {
-            //console.log(err)
+            console.log(err)
             reject(err)
         });
     })
