@@ -335,7 +335,6 @@ const isHotTrackingLive = (trackerCode) => {
                 'Api-Key': APP_API_KEY_DOMINOSINTEGRATION,
             }
         })
-        .then((response) => response.json())
         .then((json) => {
             //console.log("Received Branch Data:", json)
             resolve(json)
