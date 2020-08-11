@@ -325,7 +325,31 @@ const LiveTrackMap = (props) => {
     )
 }
 
+const isHotTrackingLive = (trackerCode) => {
+    
+    return new Promise((resolve, reject) => {
+        fetch(DOMINOS_INTEGRATION_API_URL + '/ms/isHotTrackingLive?trackerCode=' + trackerCode, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Api-Key': APP_API_KEY_DOMINOS,
+            }
+        })
+        .then((response) => response.json())
+        .then((json) => {
+            //console.log("Received Branch Data:", json)
+            resolve(json)
+        })
+        .catch(err => {
+            //console.log(err)
+            reject(err)
+        });
+    })
+    
+}
+
 export {
     DeliveryLivetrack,
-    LiveTrackMap
+    LiveTrackMap,
+    isHotTrackingLive
 }
