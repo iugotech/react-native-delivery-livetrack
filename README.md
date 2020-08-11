@@ -12,16 +12,49 @@
 
 ## Usage
 ```javascript
-import { LiveTrackMap } from 'react-native-delivery-livetrack';
 
-// USAGE
-<View 
-  style={{
-      height: '100%',
-      backgroundColor: 'red'
-  }}
->
-  <LiveTrackMap branchId={1479} driverId={36854} orderIds={"51,52"}/>
+import React, {useState} from 'react';
+....
 
-</View>
+import { LiveTrackMap, isHotTrackingLive, retrieveHotTrackingInfo } from 'react-native-delivery-livetrack';
+
+  const [data, setData] = useState(undefined)
+
+//CHECK IF Tracking Started
+ isHotTrackingLive("ABC123")
+      .then(success => {
+          console.log("isHotTrackingLive Success:", success) 
+      })
+      .catch(err => {
+          console.log("isHotTrackingLive Error:", err)
+      })
+
+
+// IF HotTracking Started (if received success response from above request), then retrieve the hot tracking info
+  retrieveHotTrackingInfo("ABC123")
+      .then(data => {
+          console.log("retrieveHotTrackingInfo Success:", data)
+          
+          // set data with returned response ==> data will be passed as props in below component
+          setData(data)
+      })
+      .catch(err => {
+          console.log("retrieveHotTrackingInfo Error:", err)
+      }) 
+
+
+// Rendering Map View --> render only if data is available
+{ data && 
+  <View 
+    style={{
+        height: '100%',
+        backgroundColor: 'red'
+    }}
+  >
+    <LiveTrackMap {...data}/>
+
+  </View>
+}
+
+
 ```
