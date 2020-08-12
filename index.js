@@ -1,9 +1,14 @@
 import React, {useState, useEffect, useContext, useRef, useCallback} from 'react';
-import { View, NativeModules, Dimensions } from 'react-native';
+import { View, NativeModules, Dimensions, Image, Text, TouchableOpacity } from 'react-native';
 import MapboxGL from "@react-native-mapbox-gl/maps";
 import {APP_API_URL, APP_API_KEY_DOMINOS, DOMINOS_INTEGRATION_API_URL, APP_API_KEY_DOMINOSINTEGRATION} from "./config"
+import StarRating from 'react-native-star-rating';
+
 import dominosBranch from "./assets/images/dominos-marker-2.png";
+// import dominosBranch from "./assets/images/driver-icon.png";
 import dominosDriver from "./assets/images/driver-icon.png";
+import dominosPhone from "./assets/images/sube-telefon.png";
+import dominosProfile from "./assets/images/profile.png";
 
 import {featureCollection as makeFeatureCollection, feature as makeFeature} from '@turf/helpers';
 
@@ -19,12 +24,12 @@ const mapStyles = {
     storeIcon: {
         iconImage: dominosBranch,
         iconAllowOverlap: true,
-        iconSize: 0.75,
+        iconSize: 0.75,        
     },
     driverIcon: {
         iconImage: dominosDriver,
         iconAllowOverlap: true,
-        iconSize: 0.18,
+        iconSize: 0.5,
     },
 };
 
@@ -331,7 +336,147 @@ const LiveTrackMap = (props) => {
 
                     </MapboxGL.ShapeSource>                    
                 
-            </MapboxGL.MapView>        
+            </MapboxGL.MapView>  
+
+
+            <View
+                style={{
+                    position: 'absolute',                    
+                    width: '100%',
+                    top: 20,
+                    left: 0,
+                    right: 0,
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center'
+                }}
+            >
+                <View style={{flex:1, display: 'flex', flexDirection: 'column'}}>
+                    <View
+                        style={{
+                            marginHorizontal: 37,
+                            backgroundColor: 'rgb(63,72,89)',
+                            height: 42,
+                            borderRadius: 12,
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'flex-start',
+                            justifyContent: 'space-between',
+                            paddingTop: 6,
+                            paddingLeft: 16,
+                            paddingRight: 16,
+                            // width: 100
+                            
+                        }}
+                    >
+                        <Text style={{fontSize: 15, fontWeight: 'bold', color: 'rgb(255,255,255)'}} >{'Siparişin Yolda'}</Text>
+                        <Text style={{fontSize: 15, fontWeight: '700', color: 'rgb(255,255,255)'}} >{'30TL'}</Text>
+                    </View>
+                    <View
+                        style={{
+                            marginHorizontal: 20,
+                            marginTop: -12,
+                            backgroundColor: 'rgb(255,255,255)',
+                            height: 100,
+                            borderRadius: 12,
+                        }}
+                    >
+                    </View>
+                </View>
+
+            </View>
+
+            <View 
+                style={{
+                    position: 'absolute',                    
+                    width: '100%',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                }}>
+                <View
+                    style={{
+                        marginBottom: 13,
+                        marginLeft: 13,
+                        marginRight: 16,
+                        height: 97,
+                        backgroundColor: 'rgb(255,255,255)',
+                        borderRadius: 12,
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}>
+                    <View
+                        style={{
+                            marginLeft: 20,
+                            height: 60,
+                            width: 60,
+                            borderRadius: 30,
+                            backgroundColor: 'rgb(230,230,230)',
+                        }}
+                    >
+                        <Image style={{height: 60, width: 60}} source={dominosProfile} resizeMode={'cover'}/>
+
+                    </View>
+                    <View
+                        style={{
+                            display: 'flex',
+                            flex: 1,
+                            flexDirection: 'column',
+                            marginLeft: 20,
+                            justifyContent: 'center',
+                            paddingTop: 20                            
+                        }}
+                    >
+                        <Text style={{fontSize: 14, fontWeight: '300', color: 'rgb(63,72,89)'}} >{'Kurye'}</Text>
+                        <Text style={{fontSize: 16, fontWeight: 'bold', color: 'rgb(63,72,89)'}} >{'Mustafa'}</Text>
+                        <StarRating
+                            disabled={false}
+                            emptyStarColor= "#f9d71c"
+                            fullStarColor="#f9d71c"
+                            maxStars={5}
+                            rating={4}
+                            starSize={12}
+                            selectedStar={(rating) => console.log(rating)}
+                            containerStyle={{width: 80, marginTop: 4}}
+                        />
+                        <Text></Text>
+                    </View>
+                    <TouchableOpacity
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            marginRight: 12,
+                            paddingTop: 13,
+                            paddingBottom: 13,
+                            height: 73,
+                            width: 63,
+                            borderRadius: 12,
+                            backgroundColor: 'rgb(255,255,255)',
+                            shadowColor: "#000",
+                            shadowOffset: {
+                                width: 0,
+                                height: 0,
+                            },
+                            shadowOpacity: 0.22,
+                            shadowRadius: 2.22,
+
+                            elevation: 3,
+                        }}
+                    >
+                        <View
+                            style={{
+
+                            }}
+                        >
+                            <Image style={{height:39, width: 38}} source={dominosPhone} resizeMode={'cover'}/>
+                            <Text style={{fontSize: 9, fontWeight: '500', color: 'rgb(165,165,165)'}}>{"Şubeyi Ara"}</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            </View>      
 
         </View>
     )

@@ -38,6 +38,7 @@
     "react-native": "^0.61.5"
   },
   "dependencies": {
-    "@react-native-mapbox-gl/maps": "react-native-mapbox-gl/maps#master"
+    "@react-native-mapbox-gl/maps": "react-native-mapbox-gl/maps#master",
+    "react-star-rating": "^1.1.0"
   }
 }
