@@ -519,11 +519,10 @@ const retrieveHotTrackingInfo = (trackerCode) => {
         })
         .then((response) => response.json())
         .then((json) => {
-            // console.log("Received Data:", json)    
-            let res = json.success;
-
-            if (res){
-                resolve(res.data)
+            // console.log("Received Data:", json)
+            
+            if (json.success){
+                resolve(json.data)
             } else {
                 reject("Info not available")
             }

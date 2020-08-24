@@ -3,8 +3,12 @@
 ## Getting started
 
 
-`$ npm install @react-native-mapbox-gl/maps --save`  
-`$ npm install "iugotech/react-native-delivery-livetrack#master" --save`
+`$ npm install @react-native-mapbox-gl/maps --save`
+`$ npm install npm install react-native-star-rating --save`
+`$ npm install react-native-vector-icons --save`
+`$ npm install --save https://github.com/iugotech/react-native-delivery-livetrack/tarball/master`
+
+`$ react-native link react-native-vector-icons`
 
 ### Mostly automatic installation
 
