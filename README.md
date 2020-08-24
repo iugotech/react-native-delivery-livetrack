@@ -3,13 +3,12 @@
 ## Getting started
 
 
-`$ npm install @react-native-mapbox-gl/maps --save`
-`$ npm install npm install react-native-star-rating --save`
-`$ npm install react-native-vector-icons --save`
-`$ npm install --save https://github.com/iugotech/react-native-delivery-livetrack/tarball/master`
-
+`$ npm install @react-native-mapbox-gl/maps --save`<br />
+`$ npm install npm install react-native-star-rating --save`<br />
+`$ npm install react-native-vector-icons --save`<br />
+`$ npm install --save https://github.com/iugotech/react-native-delivery-livetrack/tarball/master`<br />
 `$ react-native link react-native-vector-icons`
-
+<br />
 ### Mostly automatic installation
 
 `$ cd ios && pod install && cd ..`
