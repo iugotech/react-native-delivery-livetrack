@@ -45,6 +45,18 @@ import { LiveTrackMap, isHotTrackingLive, retrieveHotTrackingInfo } from 'react-
           console.log("retrieveHotTrackingInfo Error:", err)
       }) 
 
+// CHECK IF Order Delivered
+  isOrderDelivered("ABC123")
+      .then(data => {
+          console.log("isOrderedDelivered Success:", data)
+          
+          // set data with returned response ==> data will be passed as props in below component
+          setData(data)
+      })
+      .catch(err => {
+          console.log("isOrderDelivered Error:", err)
+      }) 
+
 
 // Rendering Map View --> render only if data is available
 { data && 

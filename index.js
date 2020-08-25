@@ -507,6 +507,31 @@ const isHotTrackingLive = (trackerCode) => {
     
 }
 
+const isOrderDelivered = (trackerCode) => {
+    
+    return new Promise((resolve, reject) => {
+        fetch(DOMINOS_INTEGRATION_API_URL + '/ms/isOrderDelivered?trackerCode=' + trackerCode, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Api-Key': APP_API_KEY_DOMINOSINTEGRATION,
+            }
+        })
+        .then((response) => response.json())
+        .then((json) => {
+            // console.log("Received Data:", json)    
+            let res = json.success;
+
+            resolve(res)
+        })
+        .catch(err => {
+            // console.log(err)
+            reject(err)
+        });
+    })
+    
+}
+
 const retrieveHotTrackingInfo = (trackerCode) => {
 
     return new Promise((resolve, reject) => {
@@ -540,5 +565,6 @@ export {
     DeliveryLivetrack,
     LiveTrackMap,
     isHotTrackingLive,
+    isOrderDelivered,
     retrieveHotTrackingInfo
 }
