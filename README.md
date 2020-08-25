@@ -19,7 +19,7 @@
 import React, {useState} from 'react';
 ....
 
-import { LiveTrackMap, isHotTrackingLive, retrieveHotTrackingInfo } from 'react-native-delivery-livetrack';
+import { LiveTrackMap, isHotTrackingLive, isOrderDelivered, retrieveHotTrackingInfo } from 'react-native-delivery-livetrack';
 
   const [data, setData] = useState(undefined)
 
