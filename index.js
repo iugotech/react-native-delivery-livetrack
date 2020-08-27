@@ -3,7 +3,8 @@ import { View, NativeModules, Dimensions, Image, Text, TouchableOpacity } from '
 import MapboxGL from "@react-native-mapbox-gl/maps";
 import {APP_API_URL, APP_API_KEY_DOMINOS, DOMINOS_INTEGRATION_API_URL, APP_API_KEY_DOMINOSINTEGRATION} from "./config"
 import StarRating from 'react-native-star-rating';
-
+import {TimeSlider} from './TimeSlider'
+import {useInterval} from './hooks/Interval';
 import dominosBranch from "./assets/images/dominos-marker-2.png";
 // import dominosBranch from "./assets/images/driver-icon.png";
 import dominosDriver from "./assets/images/driver-icon.png";
@@ -76,37 +77,41 @@ const LiveTrackMap = (props) => {
                 //console.log(err)
             });
             
-            setTimeout(()=>{ socketInit(props.branchId) }, 5000)
         }
         
 
     },[branchId, driverId]);
 
+    useInterval(() => {
+		socketInit(props.branchId);
+	  }, 5000)
+
     socketInit = (branchId) => {
         if (!socketState) {
-          //console.log('socket initiliazed...');
+          //console.log('socket initiliazed...', branchId);
           
-          let socket_c = new WebSocket('wss://live-dominos.iugo.tech/ws?branchID=' + branchId);
+          let socket_c = new WebSocket('wss://live-dominos-test.iugo.tech/ws?branchID=' + branchId,{rejectUnauthorized: false});
           socket_c.onopen = socketOpen;
           socket_c.onclose = socketClose;
           socket_c.onerror = socketError;
           socket_c.onmessage = socketMessage;
 
           setSocket(socket_c);
-          setSocketState(true);
+          // setSocketState(true);
         }
 
-        if (clockCallSocket) {
-            clearInterval(clockCallSocket);
-         }
 
-         clockCallSocket = setInterval(() => {
-            socketInit(branchId);
-         }, 10000);
+        // if(socketState && socket.readyState === WebSocket.OPEN){
+        //     console.log("sending message to socket")
+        //     socket.send(JSON.stringify({type: "ping", data: []}))
+        // }
 
-         if(socketState && socket.readyState === WebSocket.OPEN){
-            
-        }
+        //console.log("ReadyState:", socket.readyState === WebSocket.OPEN, socket.readyState === WebSocket.CLOSED)
+
+        // if(this.socketConnection && this.socket.readyState === WebSocket.OPEN){
+        //     console.log("sending message to socket")
+        //     this.socket.send(JSON.stringify({type: "ping", data: []}))
+        // }
     };
     
     socketError = d => {
@@ -117,23 +122,27 @@ const LiveTrackMap = (props) => {
     
     socketOpen = d => {
         // this.getData(this.state.minDate, this.state.maxDate);
-        //console.log('Socket is Opened', d);
+        // console.log('Socket is Opened', d);
+        // console.log("sending message to socket")
+        // socket.send(JSON.stringify({type: "ping", data: []}))
         setSocketState(true);
     };
     
     socketClose = d => {
         //console.log('Socket is Closed', d);
 
-        if (clockCallSocket) {
-            clearInterval(clockCallSocket);
-        }
+        // if (clockCallSocket) {
+        //     clearInterval(clockCallSocket);
+        // }
 
-        socket.close();
+        //socket.close();
         setSocketState(false);
 
     };
     
     socketMessage = message => {
+
+        //console.log("Socket Message:", message)
 
         let parsedData = JSON.parse(message.data);
 
@@ -147,9 +156,21 @@ const LiveTrackMap = (props) => {
             data = parsedData
         }
 
+        //console.log("Filtered data", data)
+        //filteredData = [data[0]];
+
+        //console.log("filteredData:", filteredData)
         filteredData = data.filter((d) => {
             return d.driver_id == props.driverId
         })
+
+        if (filteredData.length > 0){
+            if (filteredData[0].status === 'returning' || filteredData[0].status === 'waiting'){
+                if(props.onDelivered){
+                    props.onDelivered();
+                }
+            }
+        }
 
         setDrivers(filteredData)
         //console.log("Setting Drivers")
@@ -304,6 +325,7 @@ const LiveTrackMap = (props) => {
                     ref={useCallback((c) => {
                         cameraRef.current = c;                        
                     })}
+                    maxZoomLevel={16}
                     zoomLevel={16}
                     animationMode={"flyTo"}
                     animationDuration={5000}
@@ -339,11 +361,11 @@ const LiveTrackMap = (props) => {
             </MapboxGL.MapView>  
 
 
-            <View
+            {/* <View
                 style={{
                     position: 'absolute',                    
                     width: '100%',
-                    top: 20,
+                    top: 30,
                     left: 0,
                     right: 0,
                     display: 'flex',
@@ -377,10 +399,14 @@ const LiveTrackMap = (props) => {
                             marginHorizontal: 20,
                             marginTop: -12,
                             backgroundColor: 'rgb(255,255,255)',
-                            height: 100,
+                            height: 90,
                             borderRadius: 12,
+                            flexDirection: 'column',
+                            alignItems: 'center'
                         }}
                     >
+                        <Text style={{color: 'rgb(63, 72, 89)', marginTop: 7, fontWeight: '500'}}>Tahmini Kalan Süre</Text>
+                        <TimeSlider min={13}/>
                     </View>
                 </View>
 
@@ -465,6 +491,7 @@ const LiveTrackMap = (props) => {
 
                             elevation: 3,
                         }}
+                        // onPress={()=>{console.log("pressed")}}
                     >
                         <View
                             style={{
@@ -476,7 +503,7 @@ const LiveTrackMap = (props) => {
                         </View>
                     </TouchableOpacity>
                 </View>
-            </View>      
+            </View>       */}
 
         </View>
     )

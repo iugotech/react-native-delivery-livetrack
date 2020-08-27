@@ -58,6 +58,11 @@ import { LiveTrackMap, isHotTrackingLive, isOrderDelivered, retrieveHotTrackingI
       }) 
 
 
+// Handle orderDelivered event
+handleOrderDelivered = () => {
+  /* Order delivered. Remove LiveTrackMap */
+}
+
 // Rendering Map View --> render only if data is available
 { data && 
   <View 
@@ -66,7 +71,7 @@ import { LiveTrackMap, isHotTrackingLive, isOrderDelivered, retrieveHotTrackingI
         backgroundColor: 'red'
     }}
   >
-    <LiveTrackMap {...data}/>
+    <LiveTrackMap {...data} onDelivered={()=>{handleOrderDelivered}}/>
 
   </View>
 }
