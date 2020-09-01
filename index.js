@@ -165,7 +165,7 @@ const LiveTrackMap = (props) => {
         })
 
         if (filteredData.length > 0){
-            if (filteredData[0].status === 'returning' || filteredData[0].status === 'waiting'){
+            if (filteredData[0].status === 'returning' || (filteredData[0].orders && filteredData[0].orders.length <= filteredData[0].deliveredCount)){
                 if(props.onDelivered){
                     props.onDelivered();
                 }
