@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useContext, useRef, useCallback} from 'react';
-import { View, NativeModules, Dimensions, Image, Text, TouchableOpacity } from 'react-native';
+import { View, NativeModules, Dimensions, Image, Text, TouchableOpacity, Linking } from 'react-native';
 import MapboxGL from "@react-native-mapbox-gl/maps";
 import {APP_API_URL, APP_API_KEY_DOMINOS, DOMINOS_INTEGRATION_API_URL, APP_API_KEY_DOMINOSINTEGRATION} from "./config"
 import StarRating from 'react-native-star-rating';
@@ -48,9 +48,11 @@ const LiveTrackMap = (props) => {
     const [ socketState, setSocketState ] = useState(false);
     const [ stores, setStores] = useState([]);
     const [ drivers, setDrivers ] = useState([]);
+    const [ timeToCustomer, setTimeToCustomer ] = useState(null);
+    const [ driverName, setDriverName ] = useState("");
 
-    const [ center, setCenter] = useState(ITU_OFFICE_COORDINATE)
-    const [ curCenter, setCurCenter] = useState([0, 0])
+    const [ center, setCenter] = useState(ITU_OFFICE_COORDINATE);
+    const [ curCenter, setCurCenter] = useState([0, 0]);
 
     let clockCallSocket = {};
     let cameraRef = useRef(undefined);
@@ -58,7 +60,7 @@ const LiveTrackMap = (props) => {
     const {branchId, driverId} = props
     const prevData = usePrevious({branchId, driverId});
 
-    useEffect(() => {        
+    useEffect(() => {
 
         if (props.branchId){
             fetch(APP_API_URL + '/ms/zoneByExtId/' + props.branchId, {
@@ -78,19 +80,34 @@ const LiveTrackMap = (props) => {
             });
             
         }
+
+        if (props.driverName){
+          let driverName = props.driverName.split(" ")
+          setDriverName(driverName[0] + " " + driverName[1][0] + ".");
+        }
         
 
     },[branchId, driverId]);
 
     useInterval(() => {
-		socketInit(props.branchId);
+		  socketInit(props.branchId);
 	  }, 5000)
 
     socketInit = (branchId) => {
         if (!socketState) {
           //console.log('socket initiliazed...', branchId);
+
+          let customerLocation = '';
+
+          if(props.lat > 0 && props.lon) {
+            customerLocation += '&loc=' + props.lat + ',' + props.lon
+          }
+
+          if(props.customerLocation !== undefined && props.customerLocation.length > 0){
+            customerLocation += '&loc=' + props.customerLocation
+          }
           
-          let socket_c = new WebSocket('wss://live-dominos-test.iugo.tech/ws?branchID=' + branchId,{rejectUnauthorized: false});
+          let socket_c = new WebSocket('wss://live-dominos-test.iugo.tech/ws?branchID=' + branchId + customerLocation, {rejectUnauthorized: false});
           socket_c.onopen = socketOpen;
           socket_c.onclose = socketClose;
           socket_c.onerror = socketError;
@@ -167,8 +184,13 @@ const LiveTrackMap = (props) => {
         if (filteredData.length > 0){
             if (filteredData[0].status === 'returning' || (filteredData[0].orders && filteredData[0].orders.length <= filteredData[0].deliveredCount)){
                 if(props.onDelivered){
+                    setTimeToCustomer(null);
                     props.onDelivered();
                 }
+            }
+
+            if (filteredData[0].status === 'inOrder' && filteredData[0].time_to_customer > 0) {
+              setTimeToCustomer(filteredData[0].time_to_customer);
             }
         }
 
@@ -361,16 +383,17 @@ const LiveTrackMap = (props) => {
             </MapboxGL.MapView>  
 
 
-            {/* <View
+            <View
                 style={{
                     position: 'absolute',                    
                     width: '100%',
-                    top: 30,
+                    top: 50,
                     left: 0,
                     right: 0,
                     display: 'flex',
                     flexDirection: 'row',
-                    alignItems: 'center'
+                    alignItems: 'center',
+                    opacity: timeToCustomer !== null ? 1 : 0,
                 }}
             >
                 <View style={{flex:1, display: 'flex', flexDirection: 'column'}}>
@@ -392,7 +415,7 @@ const LiveTrackMap = (props) => {
                         }}
                     >
                         <Text style={{fontSize: 15, fontWeight: 'bold', color: 'rgb(255,255,255)'}} >{'Siparişin Yolda'}</Text>
-                        <Text style={{fontSize: 15, fontWeight: '700', color: 'rgb(255,255,255)'}} >{'30TL'}</Text>
+                        <Text style={{fontSize: 15, fontWeight: '700', color: 'rgb(255,255,255)'}} >{props.totalSales+'TL'}</Text>
                     </View>
                     <View
                         style={{
@@ -406,7 +429,7 @@ const LiveTrackMap = (props) => {
                         }}
                     >
                         <Text style={{color: 'rgb(63, 72, 89)', marginTop: 7, fontWeight: '500'}}>Tahmini Kalan Süre</Text>
-                        <TimeSlider min={13}/>
+                        <TimeSlider min={timeToCustomer} />
                     </View>
                 </View>
 
@@ -442,8 +465,9 @@ const LiveTrackMap = (props) => {
                             backgroundColor: 'rgb(230,230,230)',
                         }}
                     >
-                        <Image style={{height: 60, width: 60}} source={dominosProfile} resizeMode={'cover'}/>
-
+                        <Image style={{height: 60, width: 60, borderRadius: 30}} source={{
+                          uri: `https://gpstrackerimagestorage.blob.core.windows.net/driverimagecontainer/${props.storeCode}-${props.employeeCode}.jpg`
+                        }} resizeMode={'cover'}/>
                     </View>
                     <View
                         style={{
@@ -456,7 +480,7 @@ const LiveTrackMap = (props) => {
                         }}
                     >
                         <Text style={{fontSize: 14, fontWeight: '300', color: 'rgb(63,72,89)'}} >{'Kurye'}</Text>
-                        <Text style={{fontSize: 16, fontWeight: 'bold', color: 'rgb(63,72,89)'}} >{'Mustafa'}</Text>
+                        <Text style={{fontSize: 16, fontWeight: 'bold', color: 'rgb(63,72,89)'}} >{driverName}</Text>
                         <StarRating
                             disabled={false}
                             emptyStarColor= "#f9d71c"
@@ -488,10 +512,13 @@ const LiveTrackMap = (props) => {
                             },
                             shadowOpacity: 0.22,
                             shadowRadius: 2.22,
-
                             elevation: 3,
                         }}
-                        // onPress={()=>{console.log("pressed")}}
+                        onPress={()=>{
+                          if(props.storePhone !== undefined && props.storePhone.length > 0){
+                            Linking.openURL(`tel:0${props.storePhone}`)
+                          }
+                        }}
                     >
                         <View
                             style={{
@@ -503,7 +530,7 @@ const LiveTrackMap = (props) => {
                         </View>
                     </TouchableOpacity>
                 </View>
-            </View>       */}
+            </View>
 
         </View>
     )
